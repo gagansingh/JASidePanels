@@ -738,36 +738,53 @@ static char ja_kvoContext;
     }
     
     CGFloat duration = [self _calculatedDuration];
-    [UIView animateWithDuration:duration delay:0.0f options:UIViewAnimationOptionCurveLinear|UIViewAnimationOptionLayoutSubviews animations:^{
-        self.centerPanelContainer.frame = _centerPanelRestingFrame;
-        [self styleContainer:self.centerPanelContainer animate:YES duration:duration];
-        if (self.style == JASidePanelMultipleActive || self.pushesSidePanels) {
-            [self _layoutSideContainers:NO duration:0.0f];
-        }
-    } completion:^(BOOL finished) {
-        if (shouldBounce) {
-            // make sure correct panel is displayed under the bounce
-            if (self.state == JASidePanelCenterVisible) {
-                if (bounceDistance > 0.0f) {
-                    [self _loadLeftPanel];
-                } else {
-                    [self _loadRightPanel];
-                }
-            }
-            // animate the bounce
-            [UIView animateWithDuration:self.bounceDuration delay:0.0f options:UIViewAnimationOptionCurveEaseOut animations:^{
-                CGRect bounceFrame = _centerPanelRestingFrame;
-                bounceFrame.origin.x += bounceDistance;
-                self.centerPanelContainer.frame = bounceFrame;
-            } completion:^(__unused BOOL finished2) {
-                [UIView animateWithDuration:self.bounceDuration delay:0.0f options:UIViewAnimationOptionCurveEaseIn animations:^{
-                    self.centerPanelContainer.frame = _centerPanelRestingFrame;				
-                } completion:completion];
-            }];
-        } else if (completion) {
-            completion(finished);
-        }
-    }];
+  [UIView animateWithDuration:duration
+                        delay:0.0f
+                      options:UIViewAnimationOptionCurveLinear|UIViewAnimationOptionLayoutSubviews
+                   animations:^{
+                     if (self.state == JASidePanelCenterVisible) {
+                       if (CGRectGetMinX(self.centerPanelContainer.frame) >= 0 && self.hideLeftPanelAnimationBlock) {
+                         self.hideLeftPanelAnimationBlock();
+                       } else if (self.hideRightPanelAnimationBlock) {
+                         self.hideRightPanelAnimationBlock();
+                       }
+                     }
+                     else if (self.state == JASidePanelLeftVisible && self.showLeftPanelAnimationBlock) {
+                       self.showLeftPanelAnimationBlock();
+                     }
+                     else if (self.state == JASidePanelRightVisible) {
+                       self.showRightPanelAnimationBlock();
+                     }
+                     self.centerPanelContainer.frame = _centerPanelRestingFrame;
+                     [self styleContainer:self.centerPanelContainer animate:YES duration:duration];
+                     if (self.style == JASidePanelMultipleActive || self.pushesSidePanels) {
+                       [self _layoutSideContainers:NO duration:0.0f];
+                     }
+                   }
+                   completion:^(BOOL finished) {
+                     if (shouldBounce) {
+                       // make sure correct panel is displayed under the bounce
+                       if (self.state == JASidePanelCenterVisible) {
+                         if (bounceDistance > 0.0f) {
+                           [self _loadLeftPanel];
+                         } else {
+                           [self _loadRightPanel];
+                         }
+                       }
+                       // animate the bounce
+                       [UIView animateWithDuration:self.bounceDuration delay:0.0f options:UIViewAnimationOptionCurveEaseOut animations:^{
+                         CGRect bounceFrame = _centerPanelRestingFrame;
+                         bounceFrame.origin.x += bounceDistance;
+                         self.centerPanelContainer.frame = bounceFrame;
+                       } completion:^(__unused BOOL finished2) {
+                         [UIView animateWithDuration:self.bounceDuration delay:0.0f options:UIViewAnimationOptionCurveEaseIn animations:^{
+                           self.centerPanelContainer.frame = _centerPanelRestingFrame;
+                         } completion:completion];
+                       }];
+                     } else if (completion) {
+                       completion(finished);
+                     }
+                   }];
 }
 
 #pragma mark - Panel Sizing
