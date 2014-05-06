@@ -97,16 +97,28 @@ typedef enum _JASidePanelState {
 #pragma mark - Animation
 
 // this block will get included in the show left panel animation
-@property (nonatomic, copy) void (^showLeftPanelAnimationBlock)();
+@property (nonatomic, strong) void (^showLeftPanelAnimationBlock)();
+
+// this block will run after the show left panel animation
+@property (nonatomic, strong) void (^showLeftPanelAnimationCompletionBlock)();
 
 // this block will get included in the hide left panel animation
 @property (nonatomic, copy) void (^hideLeftPanelAnimationBlock)();
 
+// this block will run after the hide left panel animation
+@property (nonatomic, copy) void (^hideLeftPanelAnimationCompletionBlock)();
+
 // this block will get included in the show right panel animation
 @property (nonatomic, copy) void (^showRightPanelAnimationBlock)();
 
+// this block will run after the show right panel animation
+@property (nonatomic, copy) void (^showRightPanelAnimationCompletionBlock)();
+
 // this block will get included in the hide left panel animation
 @property (nonatomic, copy) void (^hideRightPanelAnimationBlock)();
+
+// this block will run after the hide left panel animation
+@property (nonatomic, copy) void (^hideRightPanelAnimationCompletionBlock)();
 
 // the minimum % of total screen width the centerPanel.view must move for panGesture to succeed
 @property (nonatomic) CGFloat minimumMovePercentage;

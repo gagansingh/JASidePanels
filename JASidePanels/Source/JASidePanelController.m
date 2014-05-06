@@ -740,12 +740,13 @@ static char ja_kvoContext;
     }
     
     CGFloat duration = [self _calculatedDuration];
+  BOOL hidingLeftPanel = CGRectGetMinX(self.centerPanelContainer.frame) >= 0;
   [UIView animateWithDuration:duration
                         delay:0.0f
                       options:UIViewAnimationOptionCurveLinear|UIViewAnimationOptionLayoutSubviews
                    animations:^{
                      if (self.state == JASidePanelCenterVisible) {
-                       if (CGRectGetMinX(self.centerPanelContainer.frame) >= 0 && self.hideLeftPanelAnimationBlock) {
+                       if (hidingLeftPanel && self.hideLeftPanelAnimationBlock) {
                          self.hideLeftPanelAnimationBlock();
                        } else if (self.hideRightPanelAnimationBlock) {
                          self.hideRightPanelAnimationBlock();
@@ -754,7 +755,7 @@ static char ja_kvoContext;
                      else if (self.state == JASidePanelLeftVisible && self.showLeftPanelAnimationBlock) {
                        self.showLeftPanelAnimationBlock();
                      }
-                     else if (self.state == JASidePanelRightVisible) {
+                     else if (self.state == JASidePanelRightVisible && self.showRightPanelAnimationBlock) {
                        self.showRightPanelAnimationBlock();
                      }
                      self.centerPanelContainer.frame = _centerPanelRestingFrame;
@@ -785,6 +786,20 @@ static char ja_kvoContext;
                        }];
                      } else if (completion) {
                        completion(finished);
+                     }
+                     
+                     if (self.state == JASidePanelCenterVisible) {
+                       if (hidingLeftPanel && self.hideLeftPanelAnimationCompletionBlock) {
+                         self.hideLeftPanelAnimationCompletionBlock();
+                       } else if (self.hideRightPanelAnimationCompletionBlock) {
+                         self.hideRightPanelAnimationCompletionBlock();
+                       }
+                     }
+                     else if (self.state == JASidePanelLeftVisible && self.showLeftPanelAnimationCompletionBlock) {
+                       self.showLeftPanelAnimationCompletionBlock();
+                     }
+                     else if (self.state == JASidePanelRightVisible) {
+                       self.showRightPanelAnimationCompletionBlock();
                      }
                    }];
 }
